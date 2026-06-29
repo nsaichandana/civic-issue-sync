@@ -34,6 +34,11 @@ CREATE TABLE reports (
     status report_status
         DEFAULT 'SUBMITTED',
 
+    -- Tracks community verification count
+    upvote_count INTEGER
+        NOT NULL
+        DEFAULT 0,
+
     submitted_at TIMESTAMPTZ DEFAULT NOW(),
 
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -56,7 +61,7 @@ CREATE TABLE report_media (
         REFERENCES reports(id)
         ON DELETE CASCADE,
 
-    media_type media_type NOT NULL,
+    media_type VARCHAR(50) NOT NULL,
 
     file_url TEXT NOT NULL,
 

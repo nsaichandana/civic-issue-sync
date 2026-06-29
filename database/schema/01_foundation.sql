@@ -70,6 +70,14 @@ CREATE TYPE report_source AS ENUM (
     'NEWS'
 );
 
+CREATE TYPE media_type AS ENUM (
+    'IMAGE',
+    'VIDEO',
+    'AUDIO',
+    'DOCUMENT'
+);
+
+
 -- ============================================================
 -- ROLES
 -- ============================================================
@@ -148,8 +156,6 @@ CREATE TABLE categories (
 
     description TEXT,
 
-    description TEXT,
-
     icon VARCHAR(100),
 
     color VARCHAR(30),
@@ -200,7 +206,7 @@ CREATE TABLE sla_rules (
 
 CREATE TABLE users (
 
-    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,,
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
 
     full_name VARCHAR(150) NOT NULL,
 
@@ -257,8 +263,6 @@ CREATE TABLE system_settings (
     description TEXT,
 
     updated_by UUID REFERENCES users(id),
-
-    description TEXT,
 
     updated_at TIMESTAMPTZ DEFAULT NOW()
 
