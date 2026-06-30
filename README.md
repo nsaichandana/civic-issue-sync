@@ -199,6 +199,13 @@ Add screenshots of:
 - Reports Module
 - Issues Module
 - Analytics
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/19216014-61f5-4ad9-a4e5-9e2e6d58e32c" />
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/2cfd53dd-c06c-40ae-bb03-08ff941fecd2" />
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/36819dbb-a61c-490a-af34-17ce0bed3aa6" />
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/433a5322-10f0-4c9f-8dbc-a9082cc85291" />
+
+
+
 
 ---
 
