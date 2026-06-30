@@ -1,3 +1,6 @@
+
+import { useEffect, useState } from "react";
+import { getDashboardStats } from "@/services/dashboard/dashboard.service";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   AlertOctagon,
@@ -29,6 +32,22 @@ export const Route = createFileRoute("/_shell/dashboard")({
 });
 
 function DashboardPage() {
+  const [stats, setStats] = useState({
+  reports: 0,
+  issues: 0,
+  assignments: 0,
+  auditLogs: 0,
+});
+
+useEffect(() => {
+  async function loadStats() {
+    const data = await getDashboardStats();
+    console.log(data);
+    setStats(data);
+  }
+
+  loadStats();
+}, []);
   const recent = REPORTS.slice(0, 6);
   return (
     <>
@@ -48,9 +67,9 @@ function DashboardPage() {
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <StatsCard label="Total Issues" value="1,284" delta="+4.2%" trend="up" icon={AlertOctagon} tone="primary" />
+        <StatsCard label="Total Issues" value={stats.issues.toString()} delta="+4.2%" trend="up" icon={AlertOctagon} tone="primary" />
         <StatsCard label="Pending Review" value="86" delta="+12 today" trend="up" icon={Clock} tone="warning" />
-        <StatsCard label="Assigned" value="142" delta="−3 vs yesterday" trend="down" icon={UserCheck} tone="primary" />
+        <StatsCard label="Assigned" value={stats.assignments.toString()} delta="−3 vs yesterday" trend="down" icon={UserCheck} tone="primary" />
         <StatsCard label="In Progress" value="97" delta="Stable" icon={Loader2} tone="default" />
         <StatsCard label="Resolved Today" value="38" delta="+8%" trend="up" icon={CheckCircle2} tone="accent" />
         <StatsCard label="Closed This Month" value="612" delta="+22%" trend="up" icon={CheckCircle2} tone="accent" />

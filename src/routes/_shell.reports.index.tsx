@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, SlidersHorizontal, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -13,7 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CATEGORIES, REPORTS, SOURCES, STATUS_LABELS, STATUSES } from "@/lib/mock-data";
+import { CATEGORIES, SOURCES, STATUS_LABELS, STATUSES } from "@/lib/mock-data";
+import { getReports } from "@/services/reports/reports.service";
 import { timeAgo } from "@/lib/format";
 
 export const Route = createFileRoute("/_shell/reports/")({
@@ -28,17 +29,28 @@ function ReportsPage() {
   const [source, setSource] = useState<string>("all");
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [reports, setReports] = useState<any[]>([]);
+
+useEffect(() => {
+  async function loadReports() {
+    const data = await getReports();
+    console.log(data?.[0]);
+    setReports(data);
+  }
+
+  loadReports();
+}, []);
 
   const filtered = useMemo(() => {
-    return REPORTS.filter((r) => {
+    return reports.filter((r) => {
       if (status !== "all" && r.status !== status) return false;
-      if (category !== "all" && r.category !== category) return false;
+      if (category !== "all" && r.categories?.category_name!== category) return false;
       if (source !== "all" && r.source !== source) return false;
-      if (q && !`${r.id} ${r.category} ${r.ward} ${r.reporter}`.toLowerCase().includes(q.toLowerCase()))
+      if (q && !`${r.title} ${r.categories?.category_name} ${r.wards?.ward_name} ${""}`.toLowerCase().includes(q.toLowerCase()))
         return false;
       return true;
     });
-  }, [q, status, category, source]);
+  }, [reports, q, status, category, source]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const current = filtered.slice((page - 1) * pageSize, page * pageSize);
@@ -82,7 +94,7 @@ function ReportsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-y border-border bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
-                  <th className="px-5 py-2.5 font-medium">Report ID</th>
+                  <th className="px-5 py-2.5 font-medium">Title</th>
                   <th className="px-5 py-2.5 font-medium">Source</th>
                   <th className="px-5 py-2.5 font-medium">Category</th>
                   <th className="px-5 py-2.5 font-medium">Ward</th>
@@ -95,13 +107,13 @@ function ReportsPage() {
                   <tr key={r.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
                     <td className="px-5 py-3">
                       <Link to="/reports/$reportId" params={{ reportId: r.id }} className="font-medium text-foreground hover:text-primary">
-                        {r.id}
+                        {r.title}
                       </Link>
                     </td>
                     <td className="px-5 py-3 text-muted-foreground">{r.source}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{r.category}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{r.ward}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{timeAgo(r.submittedAt)}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{r.categories?.category_name}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{r.wards?.ward_name}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{timeAgo(r.submitted_at)}</td>
                     <td className="px-5 py-3"><StatusBadge status={r.status} /></td>
                   </tr>
                 ))}
