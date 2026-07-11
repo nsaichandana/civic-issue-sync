@@ -1,6 +1,9 @@
 
 import { useEffect, useState } from "react";
-import { getDashboardStats } from "@/services/dashboard/dashboard.service";
+import {
+  getDashboardStats,
+  getRecentReports,
+} from "@/services/dashboard/dashboard.service";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   AlertOctagon,
@@ -21,7 +24,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Timeline } from "@/components/Timeline";
-import { REPORTS, TIMELINE } from "@/lib/mock-data";
+import { TIMELINE } from "@/lib/mock-data";
 import { timeAgo } from "@/lib/format";
 
 export const Route = createFileRoute("/_shell/dashboard")({
@@ -38,17 +41,24 @@ function DashboardPage() {
   assignments: 0,
   auditLogs: 0,
 });
-
+  const [recentReports, setRecentReports] = useState<any[]>([]);
 useEffect(() => {
-  async function loadStats() {
-    const data = await getDashboardStats();
-    console.log(data);
-    setStats(data);
+  async function loadDashboard() {
+    
+    const statsData = await getDashboardStats();
+    setStats(statsData);
+
+const reportsData = await getRecentReports();
+
+console.log("REPORTS:", reportsData);
+console.log("FIRST REPORT:", reportsData[0]);
+
+setRecentReports(reportsData);
   }
 
-  loadStats();
+  loadDashboard();
 }, []);
-  const recent = REPORTS.slice(0, 6);
+  const recent = recentReports;
   return (
     <>
       <PageHeader
@@ -113,7 +123,7 @@ useEffect(() => {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-6 py-2.5 font-medium">ID</th>
+                    <th className="px-6 py-2.5 font-medium">title</th>
                     <th className="px-6 py-2.5 font-medium">Category</th>
                     <th className="px-6 py-2.5 font-medium">Ward</th>
                     <th className="px-6 py-2.5 font-medium">Status</th>
@@ -123,11 +133,11 @@ useEffect(() => {
                 <tbody>
                   {recent.map((r) => (
                     <tr key={r.id} className="border-b border-border/60 last:border-0 hover:bg-muted/40">
-                      <td className="px-6 py-3 font-medium text-foreground">{r.id}</td>
-                      <td className="px-6 py-3 text-muted-foreground">{r.category}</td>
-                      <td className="px-6 py-3 text-muted-foreground">{r.ward}</td>
+                      <td className="px-6 py-3 font-medium text-foreground">{r.title}</td>
+                      <td className="px-6 py-3 text-muted-foreground">{r.categories?.category_name}</td>
+                      <td className="px-6 py-3 text-muted-foreground">{r.wards?.ward_name}</td>
                       <td className="px-6 py-3"><StatusBadge status={r.status} /></td>
-                      <td className="px-6 py-3 text-muted-foreground">{timeAgo(r.submittedAt)}</td>
+                      <td className="px-6 py-3 text-muted-foreground">{timeAgo(String(r.submitted_at))}</td>
                     </tr>
                   ))}
                 </tbody>

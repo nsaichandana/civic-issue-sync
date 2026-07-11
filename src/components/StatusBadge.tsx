@@ -11,17 +11,24 @@ const STATUS_CLASSES: Record<ReportStatus, string> = {
   rejected: "bg-[var(--color-status-rejected)] text-[var(--color-status-rejected-foreground)]",
 };
 
-export function StatusBadge({ status, className }: { status: ReportStatus; className?: string }) {
+export function StatusBadge({
+  status,
+  className,
+}: {
+  status: string;
+  className?: string;
+}) {
+  const normalizedStatus = (status ?? "").toLowerCase() as ReportStatus;
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium",
-        STATUS_CLASSES[status],
+        STATUS_CLASSES[normalizedStatus],
         className,
       )}
     >
       <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
-      {STATUS_LABELS[status]}
+      {STATUS_LABELS[normalizedStatus] ?? status}
     </span>
   );
 }
@@ -33,16 +40,23 @@ const PRIORITY_CLASSES: Record<Priority, string> = {
   critical: "bg-[var(--color-status-rejected)] text-[var(--color-status-rejected-foreground)]",
 };
 
-export function PriorityBadge({ priority, className }: { priority: Priority; className?: string }) {
+export function PriorityBadge({
+  priority,
+  className,
+}: {
+  priority: string;
+  className?: string;
+}) {
+  const normalizedPriority = (priority ?? "").toLowerCase() as Priority;
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium",
-        PRIORITY_CLASSES[priority],
+        PRIORITY_CLASSES[normalizedPriority],
         className,
       )}
     >
-      {PRIORITY_LABELS[priority]}
+      {PRIORITY_LABELS[normalizedPriority] ?? priority}
     </span>
   );
 }

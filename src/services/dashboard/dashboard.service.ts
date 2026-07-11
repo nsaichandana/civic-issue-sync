@@ -31,3 +31,26 @@ export async function getDashboardStats() {
     auditLogs: auditLogsResult.count ?? 0,
   };
 }
+
+// ⬇️ ADD THIS FUNCTION HERE
+export async function getRecentReports() {
+  const { data, error } = await supabase
+    .from("reports")
+    .select(`
+      id,
+      title,
+      status,
+      submitted_at,
+      categories(category_name),
+      wards(ward_name)
+    `)
+    .order("submitted_at", { ascending: false })
+    .limit(6);
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data;
+}

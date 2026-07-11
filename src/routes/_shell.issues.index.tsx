@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, Filter, Plus } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusBadge, PriorityBadge } from "@/components/StatusBadge";
@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { DEPARTMENTS, ISSUES, STATUSES, STATUS_LABELS } from "@/lib/mock-data";
+import { DEPARTMENTS, STATUSES, STATUS_LABELS } from "@/lib/mock-data";
+import { getIssues } from "@/services/issues/issues.service";
 import { timeAgo } from "@/lib/format";
 
 export const Route = createFileRoute("/_shell/issues/")({
@@ -18,18 +19,27 @@ export const Route = createFileRoute("/_shell/issues/")({
 });
 
 function IssuesPage() {
-  const [q, setQ] = useState("");
-  const [status, setStatus] = useState("all");
-  const [dept, setDept] = useState("all");
+const [q, setQ] = useState("");
+const [status, setStatus] = useState("all");
+const [dept, setDept] = useState("all");
+const [issues, setIssues] = useState<any[]>([]);
+  useEffect(() => {
+  async function loadIssues() {
+    const data = await getIssues();
+    setIssues(data);
+  }
+
+  loadIssues();
+}, []);
 
   const filtered = useMemo(() => {
-    return ISSUES.filter((i) => {
+    return issues.filter((i) => {
       if (status !== "all" && i.status !== status) return false;
-      if (dept !== "all" && i.department !== dept) return false;
-      if (q && !`${i.id} ${i.title} ${i.ward}`.toLowerCase().includes(q.toLowerCase())) return false;
+      if (dept !== "all" && i.departments?.department_name !== dept) return false;
+      if (q && !`${i.issue_number} ${i.title} ${i.wards?.ward_name}`.toLowerCase().includes(q.toLowerCase())) return false;
       return true;
     });
-  }, [q, status, dept]);
+  }, [q, status, dept, issues]);
 
   return (
     <>
@@ -79,20 +89,20 @@ function IssuesPage() {
               </thead>
               <tbody>
                 {filtered.map((i) => (
-                  <tr key={i.id} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
+                  <tr key={i.issue_number} className="border-b border-border/60 last:border-0 hover:bg-muted/30">
                     <td className="px-5 py-3">
                       <Link to="/issues/$issueId" params={{ issueId: i.id }} className="font-medium text-foreground hover:text-primary">
-                        {i.id}
+                        {i.issue_number}
                       </Link>
                       <p className="max-w-[280px] truncate text-xs text-muted-foreground">{i.title}</p>
                     </td>
-                    <td className="px-5 py-3 text-muted-foreground">{i.category}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{i.ward}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{i.department}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{i.categories?.category_name}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{i.wards?.ward_name}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{i.departments?.department_name}</td>
                     <td className="px-5 py-3"><PriorityBadge priority={i.priority} /></td>
                     <td className="px-5 py-3"><StatusBadge status={i.status} /></td>
-                    <td className="px-5 py-3 text-right font-medium text-foreground">{i.reportsCount}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{timeAgo(i.lastUpdated)}</td>
+                    <td className="px-5 py-3 text-right font-medium text-foreground">-</td>
+                    <td className="px-5 py-3 text-muted-foreground">{timeAgo(i.updated_at)}</td>
                   </tr>
                 ))}
               </tbody>
