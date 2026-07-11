@@ -92,18 +92,7 @@ function ReportDetailsPage() {
 
       <PageHeader
         title={report.title}
-        description={
-          <ReportMeta
-            shortId={shortId}
-            ward={ward}
-            category={category}
-            source={report.source ?? "—"}
-            submittedAt={report.submitted_at}
-            updatedAt={report.updated_at}
-            aiStatus={analysis ? "Completed" : "Pending"}
-            linkedStatus="Not linked"
-          />
-        }
+        description={`Report #${shortId} · Submitted ${timeAgo(report.submitted_at)}`}
         actions={
           <>
             <StatusBadge status={report.status ?? "pending"} />
@@ -115,6 +104,15 @@ function ReportDetailsPage() {
             </Button>
           </>
         }
+      />
+
+      <ReportMeta
+        ward={ward}
+        category={category}
+        source={report.source ?? "—"}
+        updatedAt={report.updated_at}
+        aiStatus={analysis ? "Completed" : "Pending"}
+        linkedStatus="Not linked"
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
