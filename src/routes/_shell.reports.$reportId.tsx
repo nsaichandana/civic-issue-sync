@@ -573,36 +573,30 @@ function MetaField({ label, value }: { label: string; value: React.ReactNode }) 
 }
 
 function ReportMeta({
-  shortId,
   ward,
   category,
   source,
-  submittedAt,
   updatedAt,
   aiStatus,
   linkedStatus,
 }: {
-  shortId: string;
   ward: string;
   category: string;
   source: string;
-  submittedAt: string;
   updatedAt: string;
   aiStatus: string;
   linkedStatus: string;
 }) {
   const items = [
-    { label: "Report", value: `#${shortId}` },
     { label: "Ward", value: ward },
     { label: "Category", value: category },
     { label: "Channel", value: source },
     { label: "AI", value: aiStatus },
     { label: "Issue", value: linkedStatus },
-    { label: "Submitted", value: timeAgo(submittedAt) },
     { label: "Updated", value: timeAgo(updatedAt) },
   ];
   return (
-    <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
       {items.map((i, idx) => (
         <span key={i.label} className="inline-flex items-center gap-1">
           <span className="uppercase tracking-wide">{i.label}:</span>
@@ -610,7 +604,7 @@ function ReportMeta({
           {idx < items.length - 1 && <span className="text-border">·</span>}
         </span>
       ))}
-    </span>
+    </div>
   );
 }
 
